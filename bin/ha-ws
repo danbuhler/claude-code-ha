@@ -116,9 +116,11 @@ class HAWebSocket:
             self._error("HA_URL and HA_TOKEN must be set in .env or environment")
             return False
 
-        ssl_ctx = ssl.create_default_context()
-        ssl_ctx.check_hostname = False
-        ssl_ctx.verify_mode = ssl.CERT_NONE
+        ssl_ctx = None
+        if self.ha_url.startswith('wss://'):
+            ssl_ctx = ssl.create_default_context()
+            ssl_ctx.check_hostname = False
+            ssl_ctx.verify_mode = ssl.CERT_NONE
 
         try:
             self.ws = await websockets.connect(
