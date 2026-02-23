@@ -68,11 +68,11 @@ nano /config/.env
 
 ```bash
 # Install dependencies
-apk add python3 py3-pip curl jq nodejs npm
+apk add python3 py3-pip curl jq
 pip3 install websockets --break-system-packages
 
 # Install Claude Code
-npm install -g @anthropic-ai/claude-code
+curl -fsSL https://claude.ai/install.sh | bash
 
 # Copy scripts to PATH
 cp bin/* /usr/local/bin/
@@ -205,9 +205,9 @@ cd /config/claude-code-ha  # or wherever you cloned it
 
 | Item | Action | On Re-run |
 |------|--------|-----------|
-| System packages (python3, nodejs, etc.) | Installs via apk | Reinstalls (needed after HA update) |
+| System packages (python3, etc.) | Installs via apk | Reinstalls (needed after HA update) |
 | Python websockets | pip install | Reinstalls (needed after HA update) |
-| Claude Code | npm install -g | Reinstalls (needed after HA update) |
+| Claude Code | curl install.sh | Reinstalls (needed after HA update) |
 | `ha-api`, `ha-ws`, `lovelace-sync` | **Symlinks** to repo's `bin/` | Recreates (safe) |
 | `CLAUDE.md` | **Copies** to `/config/` | Skips if exists (preserves customizations) |
 | `.env` | **Copies** template to `/config/.env` | Skips if exists (preserves your token) |
@@ -229,7 +229,6 @@ These survive in `/config`:
 - Home Assistant (any installation with shell access)
 - Python 3 with `websockets` package
 - `curl` and `jq` for ha-api
-- Node.js/npm for Claude Code
 
 ## License
 

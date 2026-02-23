@@ -26,7 +26,7 @@ elif command -v brew &> /dev/null; then
     INSTALL_CMD="brew install"
 else
     echo "Warning: Unknown package manager. Please install dependencies manually:"
-    echo "  python3, pip, curl, jq, nodejs, npm"
+    echo "  python3, pip, curl, jq"
     PKG_MANAGER="unknown"
 fi
 
@@ -35,13 +35,13 @@ if [ "$PKG_MANAGER" != "unknown" ]; then
     echo "Installing system packages..."
     case "$PKG_MANAGER" in
         apk)
-            $INSTALL_CMD python3 py3-pip npm nodejs curl jq
+            $INSTALL_CMD python3 py3-pip curl jq
             ;;
         apt)
-            sudo $INSTALL_CMD python3 python3-pip curl jq nodejs npm
+            sudo $INSTALL_CMD python3 python3-pip curl jq
             ;;
         brew)
-            $INSTALL_CMD python3 curl jq node
+            $INSTALL_CMD python3 curl jq
             ;;
     esac
 fi
@@ -56,12 +56,7 @@ fi
 
 # Install Claude Code
 echo "Installing Claude Code..."
-if command -v npm &> /dev/null; then
-    npm install -g @anthropic-ai/claude-code --silent 2>/dev/null || npm install -g @anthropic-ai/claude-code
-else
-    echo "Warning: npm not found. Please install Claude Code manually:"
-    echo "  npm install -g @anthropic-ai/claude-code"
-fi
+curl -fsSL https://claude.ai/install.sh | bash
 
 # Make scripts executable
 chmod +x "$SCRIPT_DIR/bin/"*
