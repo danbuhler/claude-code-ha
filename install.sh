@@ -57,7 +57,11 @@ fi
 # Install Claude Code
 echo "Installing Claude Code..."
 if command -v npm &> /dev/null; then
-    npm install -g @anthropic-ai/claude-code --silent 2>/dev/null || npm install -g @anthropic-ai/claude-code
+    # npm exits with EEXIST when /usr/local/bin/claude already exists, e.g. a
+    # native install linked there. Under `set -e` that aborted the whole script
+    # at this line, skipping the tool symlinks, the .env seeding and the PATH
+    # file below. Keep going instead, but say so.
+    npm install -g @anthropic-ai/claude-code --silent 2>/dev/null || npm install -g @anthropic-ai/claude-code || echo "Warning: npm install of Claude Code failed; continuing with the rest of the setup"
 else
     echo "Warning: npm not found. Please install Claude Code manually:"
     echo "  npm install -g @anthropic-ai/claude-code"
