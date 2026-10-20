@@ -192,6 +192,8 @@ For any WebSocket message type:
 ```bash
 ha-ws raw config/entity_registry/list
 ha-ws raw config/core/info
+ha-ws raw config/entity_registry/get entity_id=light.kitchen           # key=value params
+ha-ws raw config_entries/ignore_flow '{"flow_id":"X","title":"Y"}'  # or a JSON object
 ```
 
 ## Full Restart (if needed)

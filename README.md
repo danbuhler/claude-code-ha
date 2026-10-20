@@ -125,6 +125,8 @@ ha-ws call light.turn_on entity_id=light.kitchen brightness=255
 
 # Raw WebSocket
 ha-ws raw config/entity_registry/list
+ha-ws raw config/entity_registry/get entity_id=light.kitchen   # key=value params
+ha-ws raw config_entries/ignore_flow '{"flow_id":"X","title":"Y"}'   # or a JSON object
 ```
 
 ### lovelace-sync - Dashboard Sync

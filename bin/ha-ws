@@ -41,6 +41,7 @@ SYSTEM
 RAW WEBSOCKET
   raw <type> [key=value...]         Send raw WebSocket message
                                     e.g., raw config/entity_registry/list
+                                    raw config_entries/ignore_flow '{"flow_id":"X","title":"Y"}'
 
 BATCH MODE
   batch                             Read commands from stdin (one per line)
@@ -719,6 +720,33 @@ async def get_info(ha: HAWebSocket):
 # RAW WEBSOCKET
 # ==============================================================================
 
+def parse_raw_args(args: list) -> Optional[dict]:
+    """Parse raw-command params: key=value pairs and/or JSON objects.
+
+    Returns None on an argument that is neither, so it is reported instead of
+    being silently dropped (a JSON body used to be ignored entirely).
+    """
+    result = {}
+    for arg in args:
+        if arg.lstrip().startswith('{'):
+            try:
+                obj = json.loads(arg)
+            except json.JSONDecodeError as err:
+                print(f"Error: invalid JSON argument: {err}", file=sys.stderr)
+                return None
+            if not isinstance(obj, dict):
+                print("Error: JSON argument must be an object", file=sys.stderr)
+                return None
+            result.update(obj)
+        elif '=' in arg:
+            key, val = arg.split('=', 1)
+            result[key] = parse_value(val)
+        else:
+            print(f"Error: unrecognised argument {arg!r} (use key=value or a JSON object)", file=sys.stderr)
+            return None
+    return result
+
+
 async def raw_call(ha: HAWebSocket, msg_type: str, params: dict):
     result = await ha.send(msg_type, **params)
     print(json.dumps(result, indent=2, default=str))
@@ -794,7 +822,10 @@ async def run_command(args: list, json_output: bool = False, quiet: bool = False
             return await get_info(ha)
 
         elif cmd == "raw" and len(args) >= 2:
-            return await raw_call(ha, args[1], parse_kv_args(args[2:]))
+            params = parse_raw_args(args[2:])
+            if params is None:
+                return False
+            return await raw_call(ha, args[1], params)
 
         print(__doc__)
         return False
